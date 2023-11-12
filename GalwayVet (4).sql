@@ -1,0 +1,240 @@
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+
+CREATE TABLE `ANIMAL` (
+  `animalID` int(11) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `age` int(11) DEFAULT NULL,
+  `species` varchar(50) DEFAULT NULL,
+  `breed` varchar(50) DEFAULT NULL,
+  `type` varchar(50) DEFAULT NULL,
+  `ownerID` int(11) DEFAULT NULL,
+  `foodID` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `APPOINTMENT` (
+  `appointmentID` int(11) NOT NULL,
+  `appointmentDate` date NOT NULL,
+  `appointmentTime` time NOT NULL,
+  `animalID` int(11) NOT NULL,
+  `appointmentType` varchar(100) NOT NULL,
+  `appointmentNotes` varchar(150) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `ATTENDANCE` (
+  `attendanceID` int(11) NOT NULL,
+  `staffID` int(11) NOT NULL,
+  `appointmentID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `BILLING` (
+  `invoiceID` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `balance` decimal(10,2) NOT NULL,
+  `paymentStatus` varchar(50) NOT NULL,
+  `paymentType` varchar(50) DEFAULT NULL,
+  `appointmentID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `DIAGNOSIS` (
+  `diagnosisID` int(11) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `animalID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `FOOD` (
+  `foodID` int(11) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `species` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `INSTALLMENT` (
+  `installmentID` int(11) NOT NULL,
+  `planID` int(11) DEFAULT NULL,
+  `installmentNumber` int(11) DEFAULT NULL,
+  `dueDate` date DEFAULT NULL,
+  `datePaid` date DEFAULT NULL,
+  `status` enum('PENDING','PAID','OVERDUE') DEFAULT NULL,
+  `amount` decimal(10,2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `MEDICATION` (
+  `medicationID` int(11) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `description` varchar(250) DEFAULT NULL,
+  `administrationRoute` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `OWNER` (
+  `ownerID` int(11) NOT NULL,
+  `firstName` varchar(50) NOT NULL,
+  `lastName` varchar(50) NOT NULL,
+  `address` varchar(100) NOT NULL,
+  `phone` int(15) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `PAYMENT_PLAN` (
+  `planID` int(11) NOT NULL,
+  `invoiceID` int(11) DEFAULT NULL,
+  `totalInstallments` int(11) DEFAULT NULL,
+  `due_date` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `PRESCRIPTION` (
+  `prescriptionID` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `animalID` int(11) NOT NULL,
+  `staffID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `PRESCRIPTION_MEDICATION` (
+  `presMedID` int(11) NOT NULL,
+  `prescriptionID` int(11) NOT NULL,
+  `medicationID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `STAFF` (
+  `staffID` int(11) NOT NULL,
+  `firstName` varchar(50) NOT NULL,
+  `lastName` varchar(50) NOT NULL,
+  `role` varchar(20) NOT NULL,
+  `phone` int(15) DEFAULT NULL,
+  `salary` decimal(10,2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+ALTER TABLE `ANIMAL`
+  ADD PRIMARY KEY (`animalID`),
+  ADD KEY `ownerID` (`ownerID`),
+  ADD KEY `foodID` (`foodID`);
+
+ALTER TABLE `APPOINTMENT`
+  ADD PRIMARY KEY (`appointmentID`),
+  ADD KEY `animalID` (`animalID`);
+
+ALTER TABLE `ATTENDANCE`
+  ADD PRIMARY KEY (`attendanceID`),
+  ADD KEY `staffID` (`staffID`),
+  ADD KEY `appointmentID` (`appointmentID`);
+
+ALTER TABLE `BILLING`
+  ADD PRIMARY KEY (`invoiceID`),
+  ADD KEY `FK_appointment` (`appointmentID`);
+
+ALTER TABLE `DIAGNOSIS`
+  ADD PRIMARY KEY (`diagnosisID`),
+  ADD KEY `animalID` (`animalID`);
+
+ALTER TABLE `FOOD`
+  ADD PRIMARY KEY (`foodID`);
+
+ALTER TABLE `INSTALLMENT`
+  ADD PRIMARY KEY (`installmentID`),
+  ADD KEY `planID` (`planID`);
+
+ALTER TABLE `MEDICATION`
+  ADD PRIMARY KEY (`medicationID`);
+
+ALTER TABLE `OWNER`
+  ADD PRIMARY KEY (`ownerID`);
+
+ALTER TABLE `PAYMENT_PLAN`
+  ADD PRIMARY KEY (`planID`),
+  ADD KEY `invoiceID` (`invoiceID`);
+
+ALTER TABLE `PRESCRIPTION`
+  ADD PRIMARY KEY (`prescriptionID`),
+  ADD KEY `animalID` (`animalID`),
+  ADD KEY `staffID` (`staffID`);
+
+ALTER TABLE `PRESCRIPTION_MEDICATION`
+  ADD PRIMARY KEY (`presMedID`),
+  ADD KEY `prescriptionID` (`prescriptionID`),
+  ADD KEY `medicationID` (`medicationID`);
+
+ALTER TABLE `STAFF`
+  ADD PRIMARY KEY (`staffID`);
+
+
+ALTER TABLE `ANIMAL`
+  MODIFY `animalID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `APPOINTMENT`
+  MODIFY `appointmentID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `ATTENDANCE`
+  MODIFY `attendanceID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `BILLING`
+  MODIFY `invoiceID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `DIAGNOSIS`
+  MODIFY `diagnosisID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `FOOD`
+  MODIFY `foodID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `INSTALLMENT`
+  MODIFY `installmentID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `MEDICATION`
+  MODIFY `medicationID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `OWNER`
+  MODIFY `ownerID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `PAYMENT_PLAN`
+  MODIFY `planID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `PRESCRIPTION`
+  MODIFY `prescriptionID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `PRESCRIPTION_MEDICATION`
+  MODIFY `presMedID` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `STAFF`
+  MODIFY `staffID` int(11) NOT NULL AUTO_INCREMENT;
+
+
+ALTER TABLE `ANIMAL`
+  ADD CONSTRAINT `ANIMAL_ibfk_1` FOREIGN KEY (`ownerID`) REFERENCES `OWNER` (`ownerID`),
+  ADD CONSTRAINT `ANIMAL_ibfk_3` FOREIGN KEY (`foodID`) REFERENCES `FOOD` (`foodID`);
+
+ALTER TABLE `APPOINTMENT`
+  ADD CONSTRAINT `APPOINTMENT_ibfk_1` FOREIGN KEY (`animalID`) REFERENCES `ANIMAL` (`animalID`);
+
+ALTER TABLE `ATTENDANCE`
+  ADD CONSTRAINT `ATTENDANCE_ibfk_1` FOREIGN KEY (`staffID`) REFERENCES `STAFF` (`staffID`),
+  ADD CONSTRAINT `ATTENDANCE_ibfk_2` FOREIGN KEY (`appointmentID`) REFERENCES `APPOINTMENT` (`appointmentID`);
+
+ALTER TABLE `BILLING`
+  ADD CONSTRAINT `FK_appointment` FOREIGN KEY (`appointmentID`) REFERENCES `APPOINTMENT` (`appointmentID`);
+
+ALTER TABLE `DIAGNOSIS`
+  ADD CONSTRAINT `DIAGNOSIS_ibfk_1` FOREIGN KEY (`animalID`) REFERENCES `ANIMAL` (`animalID`);
+
+ALTER TABLE `INSTALLMENT`
+  ADD CONSTRAINT `INSTALLMENT_ibfk_1` FOREIGN KEY (`planID`) REFERENCES `PAYMENT_PLAN` (`planID`);
+
+ALTER TABLE `PAYMENT_PLAN`
+  ADD CONSTRAINT `PAYMENT_PLAN_ibfk_1` FOREIGN KEY (`invoiceID`) REFERENCES `BILLING` (`invoiceID`);
+
+ALTER TABLE `PRESCRIPTION`
+  ADD CONSTRAINT `PRESCRIPTION_ibfk_1` FOREIGN KEY (`animalID`) REFERENCES `ANIMAL` (`animalID`),
+  ADD CONSTRAINT `PRESCRIPTION_ibfk_2` FOREIGN KEY (`staffID`) REFERENCES `STAFF` (`staffID`);
+
+ALTER TABLE `PRESCRIPTION_MEDICATION`
+  ADD CONSTRAINT `PRESCRIPTION_MEDICATION_ibfk_1` FOREIGN KEY (`prescriptionID`) REFERENCES `PRESCRIPTION` (`prescriptionID`),
+  ADD CONSTRAINT `PRESCRIPTION_MEDICATION_ibfk_2` FOREIGN KEY (`medicationID`) REFERENCES `MEDICATION` (`medicationID`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
